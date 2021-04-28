@@ -1,3 +1,5 @@
+USE company_DB;
+
 -- Departments
 
 INSERT INTO department (name)
