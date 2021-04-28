@@ -12,8 +12,13 @@ function viewEmployee() {
 
 }
 
+function viewByDepartment() {
+
+}
+
 module.exports = {
     viewDepartment: viewDepartment,
     viewRole: viewRole,
-    viewEmployee: viewEmployee
+    viewEmployee: viewEmployee,
+    viewByDepartment: viewByDepartment
 };
