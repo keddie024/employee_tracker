@@ -22,7 +22,6 @@ function init() {
             message: "What would you like to do?",
             choices: [
                 "View All Employees",
-                "View All Employees by Department",
                 "Add Employee",
                 "Update Employee Role",
                 "View All Roles",
@@ -36,10 +35,6 @@ function init() {
             switch (response.choice) {
                 case "View All Employees":
                     view.viewEmployee(connection, init);
-                    break;
-
-                case "View All Employees by Department":
-                    view.viewByDepartment(connection, init);
                     break;
 
                 case "Add Employee":
