@@ -2,21 +2,21 @@ const inquirer = require("inquirer");
 
 function addDepartment(connection, init) {
     inquirer
-    .prompt([
-        {
-            name: "deptartment",
-            type: "input",
-            message: "What department would you like to add?"
-        }
-    ])
-    .then(function (response) {
+        .prompt([
+            {
+                name: "deptartment",
+                type: "input",
+                message: "What department would you like to add?"
+            }
+        ])
+        .then(function (response) {
             connection.query('INSERT INTO department (name) VALUES (?)', response.deptartment, function (err, res) {
                 if (err) throw err;
                 console.log("Department added!");
                 init();
             });
 
-    })
+        })
 
 };
 
@@ -67,9 +67,78 @@ function addRole(connection, init) {
     })
 };
 
-function addEmployee() {
+function addEmployee(connection, init) {
+    let newEmployee = {};
+    connection.query("SELECT * FROM role", function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: "first",
+                    type: "input",
+                    message: "Please enter the employee's first name:",
+                },
+                {
+                    name: "last",
+                    type: "input",
+                    message: "Please enter the employee's last name:",
+                },
+                {
+                    name: "role",
+                    type: "list",
+                    choices: function () {
+                        let choiceArray = [];
+                        for (var i = 0; i < res.length; i++) {
+                            choiceArray.push(res[i].title);
+                        }
+                        return choiceArray;
+                    },
+                    message: "What will be the employee's role?"
+                }
+            ])
+            .then(function (response) {
+                newEmployee.first_name = response.first;
+                newEmployee.last_name = response.last;
 
-}
+                connection.query("SELECT * FROM role WHERE title = ?", response.role, function (err, res) {
+                    if (err) throw err;
+
+                    newEmployee.role_id = res[0].id;
+
+                    connection.query("SELECT * FROM employee;", function (err, res) {
+                        if (err) throw err;
+                        inquirer
+                            .prompt([
+                                {
+                                    name: "manager",
+                                    type: "list",
+                                    choices: function () {
+                                        let choiceArray = [];
+                                        for (var i = 0; i < res.length; i++) {
+                                            choiceArray.push(res[i].first_name);
+                                        }
+                                        return choiceArray;
+                                    },
+                                    message: "Who will be the employee's manager?"
+                                }
+                            ])
+                            .then(function (response) {
+                                connection.query("SELECT id FROM employee WHERE first_name = ?", response.manager, function (err, res) {
+                                    if (err) throw err;
+                                    newEmployee.manager_id = res[0].id;
+
+                                    connection.query('INSERT INTO employee SET ?', newEmployee, function (err, res) {
+                                        if (err) throw err;
+                                        console.log("Employee added!");
+                                        init();
+                                    })
+                                })
+                            });
+                    });
+                });
+            });
+    })
+};
 
 module.exports = {
     addDepartment: addDepartment,
